@@ -3,25 +3,9 @@
 <h1>Counter</h1>
 
 <p>Current count: @currentCount</p>
+<p>Singleton count: @singleton.Valor</p>
+<p>Transient count: @transient.Valor</p>
 
 <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
-<ListadoPeliculas Peliculas="ObtenerPeliculas()"></ListadoPeliculas>
+<button class="btn btn-secondary" @onclick="IncrementCountJavaScript">Click me by Javascript</button>
 
-@code {
-    private int currentCount = 0;
-
-    private void IncrementCount()
-    {
-        currentCount++;
-    }
-
-	List<Pelicula> ObtenerPeliculas()
-	{
-		return new List<Pelicula>()
-			{
-				new Pelicula{Titulo = "Avengers: End Game",FechaLanzamiento = new DateTime(2022,12,12)},
-				new Pelicula{Titulo = "Spider-Man: Far from Home",FechaLanzamiento = new DateTime(2015,11,11)},
-				new Pelicula{Titulo = "Your Name",FechaLanzamiento = new DateTime(2013,11,11)},
-			};
-	}
-}

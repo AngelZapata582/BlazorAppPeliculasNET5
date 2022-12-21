@@ -1,23 +1,31 @@
 ﻿@page "/"
+@inject IRepositorio repositorio
+@inject ServicioSingleton singleton
 <div>
-    <ListadoPeliculas Peliculas="ObtenerPeliculas()"></ListadoPeliculas>
+	@singleton.Valor
+	<!--			  referencia del componente										-->
+    <ListadoPeliculas @ref="listadoPeliculas" Peliculas="Peliculas"></ListadoPeliculas>
 </div>
 
 <div>
+	<button @onclick="LimparPeliculas">Limpar peliculas</button>
 	<h2>Crear Pelicula</h2>
 	<TextBoxExmple placeholder="Nombre Pelicula" ></TextBoxExmple>
 	<BindEvento></BindEvento>
 </div>
 
 @code {
-	List<Pelicula> ObtenerPeliculas()
+	public List<Pelicula> Peliculas { get; set; } = null!;
+	//haciendo referencia al componente de listado peliculas
+	public ListadoPeliculas listadoPeliculas;
+
+	protected override void OnInitialized()
 	{
-		return new List<Pelicula>()
-			{
-				new Pelicula{Titulo = "Titanes del pacifico",FechaLanzamiento = new DateTime(2022,12,12)},
-				new Pelicula{Titulo = "Titanes del pacifico",FechaLanzamiento = new DateTime(2015,11,11)},
-				new Pelicula{Titulo = "Vengadores",FechaLanzamiento = new DateTime(2013,11,11)},
-				new Pelicula{Titulo = "Gigantes de acero",FechaLanzamiento = new DateTime(2012,11,11)}
-			};
+		Peliculas = repositorio.ObtenerPeliculas();
+	}
+
+	private void LimparPeliculas()
+	{
+		listadoPeliculas.LimpiarPeliculas();
 	}
 }
