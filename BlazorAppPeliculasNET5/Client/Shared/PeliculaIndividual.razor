@@ -1,9 +1,11 @@
 ﻿<div class="m-2" style="text-align:center">
-	<a>
+	<a href="@URLPelicula">
 		<img src="@Pelicula.Poster" alt="poster" style="width:225px; height:300px;"/>
 	</a>
 	<p style="max-width:225px;height:44px;font-size:15px;font-weight:bold;">
-		@Pelicula.Titulo
+		<a href="@URLPelicula" class="text-decoration-none text-dark">
+			@Pelicula.Titulo
+		</a>
 	</p>
 	<div>
 		<a class="btn btn-warning">Editar</a>
@@ -17,4 +19,10 @@
 	[Parameter] public Pelicula Pelicula { get; set; } = null!;
 	[Parameter] public bool showing { get; set; } = false;
 
+	private string URLPelicula = string.Empty;
+
+	protected override void OnInitialized()
+	{
+		URLPelicula = $"Pelicula/";
+	}
 }

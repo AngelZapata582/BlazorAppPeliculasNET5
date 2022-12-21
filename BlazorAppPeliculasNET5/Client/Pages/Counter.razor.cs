@@ -1,4 +1,5 @@
 ﻿using BlazorAppPeliculasNET5.Client.Repositorios;
+using MathNet.Numerics.Statistics;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using System;
@@ -9,9 +10,15 @@ namespace BlazorAppPeliculasNET5.Client.Pages
 	public partial class Counter
 	{
 		private int currentCount = 0;
+		[Inject] public IJSRuntime js { get; set; } = null!;
 
-		public  void IncrementCount()
+		public  async void IncrementCount()
 		{
+			var arreglo = new double[] { 1,2,3,4,5 };
+			var max = arreglo.Maximum();
+			var min = arreglo.Minimum();
+
+			await js.InvokeVoidAsync("alert", $"El max es {max} y el min es {min}");
 			currentCount++;
 		}
 
