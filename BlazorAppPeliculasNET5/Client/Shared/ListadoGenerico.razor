@@ -1,0 +1,37 @@
+﻿@typeparam GenericParam 
+@if (listado is null)
+{
+	@if (Cargando is null)
+	{
+		<p>Cargando...</p>
+	}
+	else
+	{
+		@Cargando
+	}
+}
+else if (listado.Count is 0)
+{
+	@if (NoHayRegistros is null)
+	{
+		<p>No hay peliculas.</p>
+	}
+	else
+	{
+		@NoHayRegistros
+	}
+}
+else
+{
+	@foreach (GenericParam elemento in listado)
+	{
+		@Registros(elemento);
+	}
+}
+
+@code {
+    [Parameter] public RenderFragment Cargando { get; set; } = null!;
+    [Parameter] public RenderFragment NoHayRegistros { get; set; } = null!;
+	[Parameter] public RenderFragment<GenericParam> Registros { get; set; }
+    [Parameter] public List<GenericParam> listado { get; set; } = null!;
+}

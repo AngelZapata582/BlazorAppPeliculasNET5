@@ -1,58 +1,15 @@
 ﻿@page "/"
 <div>
-	<h3>Pelicula</h3>
-	<p>Titulo: <b>@Titanes.Titulo</b></p>
-	<p>Titulo: <b>@Titanes.FechaLanzamiento.ToString()</b></p>
+    <ListadoPeliculas Peliculas="ObtenerPeliculas()"></ListadoPeliculas>
 </div>
 
-@if (Peliculas is null)
-{
-	<div class="d-flex justify-content-center">
-		<div class="spinner-border" role="status">
-			<span class="visually-hidden"></span>
-		</div>
-		<span class="visually-hidden">Loading...</span>
-	</div>
-}
-else if (Peliculas.Count is 0)
-{
-	<p>No hay peliculas.</p>
-}
-else
-{
-	@foreach (Pelicula pelicula in Peliculas)
-	{
-		<div>
-			<p>
-				Titulo: <b>@pelicula.Titulo</b>
-				@if (DateTime.Today.Subtract(pelicula.FechaLanzamiento).Days <= 20)
-				{
-					<span style="color: red">¡Estreno!</span>
-				}
-			</p>
-			<p>Fecha de lanzamiento: <b>@pelicula.FechaLanzamiento.ToString()</b></p>
-		</div>
-	}
-}
+<div>
+	<h2>Crear Pelicula</h2>
+	<TextBoxExmple placeholder="Nombre Pelicula" ></TextBoxExmple>
+	<BindEvento></BindEvento>
+</div>
 
 @code {
-	List<Pelicula>? Peliculas { get; set; }
-	Pelicula Titanes { get { return ObtenerPelicula(); } }
-
-	protected override async Task OnInitializedAsync()
-	{
-		await Task.Delay(3000);
-		Peliculas = ObtenerPeliculas();
-	}
-
-	Pelicula ObtenerPelicula()
-	{
-		return new Pelicula
-			{
-				Titulo = "Avatar",
-				FechaLanzamiento = new DateTime(2012, 11, 11)
-			};
-	}
 	List<Pelicula> ObtenerPeliculas()
 	{
 		return new List<Pelicula>()
