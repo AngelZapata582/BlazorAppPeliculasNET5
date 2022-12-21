@@ -1,6 +1,17 @@
-﻿@page "/genero/editar/{GeneroId:int}"
+﻿@page "/generos/editar/{GeneroId:int}"
 <h3>Editar</h3>
+<GeneroForm Genero="Genero" Save="Save"></GeneroForm>
 
 @code {
     [Parameter] public int GeneroId { get; set; }
+    private Genero Genero;
+    protected override void OnInitialized()
+    {
+        Genero = new Genero() { Id = GeneroId, Name = "Comedia" };
+    }
+
+    private void Save()
+    {
+        Console.WriteLine($"Id: {Genero.Id}, Name:{Genero.Name}");
+    }
 }

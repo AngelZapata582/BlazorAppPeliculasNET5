@@ -1,4 +1,5 @@
 using BlazorAppPeliculasNET5.Client.Repositorios;
+using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,7 +24,7 @@ namespace BlazorAppPeliculasNET5.Client
             //                            interfaz a    clase a
             //                            implementar   proveer
             builder.Services.AddSingleton<IRepositorio, Repositorio>();
-
+            builder.Services.AddSweetAlert2();
             await builder.Build().RunAsync();
         }
     }

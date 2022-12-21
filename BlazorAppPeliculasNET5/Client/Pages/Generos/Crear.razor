@@ -1,6 +1,13 @@
-﻿@page "/genero/crear"
+﻿@page "/generos/crear"
 <h3>Crear</h3>
 
-@code {
+<GeneroForm Genero="Genero" Save="Save"></GeneroForm>
 
+@code {
+    private Genero Genero = new Genero();
+
+    private void Save()
+    {
+        Console.WriteLine($"Nombre {Genero.Name}");
+    }
 }
