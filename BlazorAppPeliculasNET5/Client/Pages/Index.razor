@@ -1,31 +1,15 @@
 ﻿@page "/"
 @inject IRepositorio repositorio
-@inject ServicioSingleton singleton
 <div>
-	@singleton.Valor
-	<!--			  referencia del componente										-->
-    <ListadoPeliculas @ref="listadoPeliculas" Peliculas="Peliculas"></ListadoPeliculas>
-</div>
-
-<div>
-	<button @onclick="LimparPeliculas">Limpar peliculas</button>
-	<h2>Crear Pelicula</h2>
-	<TextBoxExmple placeholder="Nombre Pelicula" ></TextBoxExmple>
-	<BindEvento></BindEvento>
+    <ListadoPeliculas Peliculas="Peliculas"></ListadoPeliculas>
 </div>
 
 @code {
 	public List<Pelicula> Peliculas { get; set; } = null!;
-	//haciendo referencia al componente de listado peliculas
-	public ListadoPeliculas listadoPeliculas;
 
 	protected override void OnInitialized()
 	{
 		Peliculas = repositorio.ObtenerPeliculas();
 	}
 
-	private void LimparPeliculas()
-	{
-		listadoPeliculas.LimpiarPeliculas();
-	}
 }

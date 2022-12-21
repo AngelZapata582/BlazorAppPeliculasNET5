@@ -19,9 +19,6 @@ namespace BlazorAppPeliculasNET5.Client
             builder.RootComponents.Add<App>("#app");
 
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
-
-            builder.Services.AddSingleton<ServicioSingleton>();
-            builder.Services.AddTransient<ServicioTransient>();
             //configura el servicio 
             //                            interfaz a    clase a
             //                            implementar   proveer

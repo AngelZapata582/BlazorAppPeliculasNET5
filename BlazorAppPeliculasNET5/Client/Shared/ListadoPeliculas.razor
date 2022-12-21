@@ -1,41 +1,18 @@
 ﻿@inject IJSRuntime js
 <h3>Listado de Peliculas</h3>
 
-	<input type="checkbox" @bind="show" /><span>Mostrar Botones</span>
+<div style="display: flex; flex-wrap: wrap; align-items: center;">
 	<ListadoGenerico listado="Peliculas">
 		<Registros>
-			<PeliculaIndividual Pelicula="context" showing=show EliminarPelicula="Eliminar"></PeliculaIndividual>
+			<PeliculaIndividual Pelicula="context" EliminarPelicula="Eliminar"></PeliculaIndividual>
 		</Registros>
 	</ListadoGenerico>
-	
+</div>
+
 @code {
-
-
-	bool show = false;
 
 	[Parameter]
 	public List<Pelicula> Peliculas { get; set; } = null!;
-
-	protected override void OnInitialized()
-	{
-		Console.WriteLine($"OnInitialized: {Peliculas.Count}");
-	}
-
-	protected override void OnParametersSet()
-	{
-		Console.WriteLine($"OnParametersSet: {Peliculas.Count}");
-	}
-
-	protected override void OnAfterRender(bool firstRender)
-	{
-		Console.WriteLine($"OnAfterRender: {firstRender}");
-	}
-
-	protected override bool ShouldRender()
-	{
-		Console.WriteLine("OnShouldRender");
-		return true;
-	}
 
 	private async Task Eliminar(Pelicula pelicula)
 	{
@@ -48,11 +25,4 @@
 
 	}
 
-	public void LimpiarPeliculas()
-	{
-		if(Peliculas is not null)
-		{
-			Peliculas.Clear();
-		}
-	}
 }
