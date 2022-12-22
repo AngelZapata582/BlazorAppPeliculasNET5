@@ -1,12 +1,24 @@
 ﻿@page "/actores/crear"
 @inject NavigationManager navigation
+@inject IRepositorio repositorio
+@inject SweetAlertService Swal
 <h3>Crear</h3>
 <ActoresForm Actor="Actor" OnSubmitValid="Save"></ActoresForm>
 @code {
     private Actor Actor = new Actor();
 
-    private void Save()
+    private async Task Save()
     {
-        navigation.NavigateTo("/actores");
+        var httpResponse = await repositorio.Post("api/actores", Actor);
+
+        if (httpResponse.Error)
+        {
+            var mensajeError = await httpResponse.ObtenerMensageError();
+            await Swal.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
+        }
+        else
+        {
+            navigation.NavigateTo("/actores");
+        }
     }
 }
