@@ -1,5 +1,7 @@
 ﻿@page "/generos/crear"
 @inject NavigationManager navigation
+@inject SweetAlertService Swal
+@inject IRepositorio repositorio
 <h3>Crear</h3>
 
 <GeneroForm Genero="Genero" Save="Save"></GeneroForm>
@@ -7,9 +9,18 @@
 @code {
     private Genero Genero = new Genero();
 
-    private void Save()
+    private async void Save()
     {
-        Console.WriteLine($"Nombre {Genero.Name}");
-        navigation.NavigateTo("/generos");
+        var httpResponse = await repositorio.Post("api/generos", Genero);
+
+        if (httpResponse.Error)
+        {
+            await Swal.FireAsync("Error", "Hubo un error", SweetAlertIcon.Error);
+        }
+        else
+        {
+            Console.WriteLine($"Nombre {Genero.Name}");
+            navigation.NavigateTo("/generos");
+        }
     }
 }

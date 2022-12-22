@@ -27,5 +27,6 @@ namespace BlazorAppPeliculasNET5.Shared.Entidades
         {
             return base.GetHashCode();
         }
+        public List<PeliculaActor> PeliculasActor { get; set; } = new List<PeliculaActor>();
     }
 }

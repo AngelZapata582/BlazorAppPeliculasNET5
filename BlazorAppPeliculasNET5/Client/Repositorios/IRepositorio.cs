@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using BlazorAppPeliculasNET5.Shared.Entidades;
 namespace BlazorAppPeliculasNET5.Client.Repositorios
 {
@@ -7,5 +8,6 @@ namespace BlazorAppPeliculasNET5.Client.Repositorios
     public interface IRepositorio
     {
         List<Pelicula> ObtenerPeliculas();
+        Task<HttpResponceWrapper<object>> Post<T>(string url, T enviar);
     }
 }

@@ -1,6 +1,10 @@
 ﻿using BlazorAppPeliculasNET5.Shared.Entidades;
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
+using System.Text;
+using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace BlazorAppPeliculasNET5.Client.Repositorios
 {
@@ -8,6 +12,20 @@ namespace BlazorAppPeliculasNET5.Client.Repositorios
     //centraliza el servicio
     public class Repositorio: IRepositorio
     {
+        private readonly HttpClient _httpClient;
+
+        public Repositorio(HttpClient httpClient)
+        {
+            _httpClient = httpClient;
+        }
+
+        public async Task<HttpResponceWrapper<object>> Post<T>(string url, T enviar)
+        {
+            var enviarJSON = JsonSerializer.Serialize(enviar);
+            var enviarContext = new StringContent(enviarJSON, Encoding.UTF8, "application/json");
+            var responseHttp = await _httpClient.PostAsync(url,enviarContext);
+            return new HttpResponceWrapper<object>(null, !responseHttp.IsSuccessStatusCode, responseHttp);
+        }
 
         public List<Pelicula> ObtenerPeliculas()
         {

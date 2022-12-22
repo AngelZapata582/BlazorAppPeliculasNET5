@@ -23,7 +23,7 @@ namespace BlazorAppPeliculasNET5.Client
             //configura el servicio 
             //                            interfaz a    clase a
             //                            implementar   proveer
-            builder.Services.AddSingleton<IRepositorio, Repositorio>();
+            builder.Services.AddScoped<IRepositorio, Repositorio>();
             builder.Services.AddSweetAlert2();
             await builder.Build().RunAsync();
         }
