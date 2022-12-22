@@ -1,6 +1,17 @@
 ﻿@page "/peliculas/editar/{PeliculaId:int}"
-<h3>Editar</h3>
-
+<h3>Editar Pelicula</h3>
+<PeliculaForm Pelicula="Pelicula" OnValidSubmit="Edit"></PeliculaForm>
 @code {
+    private Pelicula Pelicula = new Pelicula();
     [Parameter] public int PeliculaId { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Pelicula = new Pelicula { Id = PeliculaId, Titulo = "Mi pelicula" };
+    }
+
+    private void Edit()
+    {
+        
+    }
 }

@@ -1,6 +1,12 @@
 ﻿@page "/actores/crear"
+@inject NavigationManager navigation
 <h3>Crear</h3>
-
+<ActoresForm Actor="Actor" OnSubmitValid="Save"></ActoresForm>
 @code {
+    private Actor Actor = new Actor();
 
+    private void Save()
+    {
+        navigation.NavigateTo("/actores");
+    }
 }

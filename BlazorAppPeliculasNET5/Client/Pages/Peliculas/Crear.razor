@@ -2,8 +2,11 @@
 @inject NavigationManager navigationManager
 <h3>Crear Pelicula</h3>
 
-<button @onclick="Save">Guardar</button>
+<PeliculaForm Pelicula="Pelicula" OnValidSubmit="Save"></PeliculaForm>
+
 @code {
+    private Pelicula Pelicula = new Pelicula();
+
     void Save()
     {
         Console.WriteLine("Pelicula creada");

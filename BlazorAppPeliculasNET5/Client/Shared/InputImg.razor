@@ -1,0 +1,47 @@
+﻿<div>
+    <label>@Label</label>
+    <div>
+        <InputFile OnChange="OnChange" accept=".jpg,.jpeg,.png,.jfif"/>
+    </div>
+</div>
+
+<div>
+    @if(imageBase64 is not null)
+    {
+        <div>
+            <div style="margin: 10px">
+                <img src="data:image/jpeg;base64, @imageBase64" style="width:400px"/>
+            </div>
+        </div>
+    }
+    @if (imageUrl is not null)
+    {
+        <div>
+            <div style="margin: 10px">
+                <img src="@imageUrl" style="width:400px" />
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public string Label { get; set; } = "Archivo";
+    [Parameter] public string imageUrl { get; set; } = null!;
+    [Parameter] public EventCallback<string> ImagenSeleccionada { get; set; }
+    private string? imageBase64;
+
+    private async Task OnChange(InputFileChangeEventArgs e)
+    {
+        var imagenes = e.GetMultipleFiles();
+
+        foreach(var imagen in imagenes)
+        {
+            var arrBytes = new byte[imagen.Size];
+            await imagen.OpenReadStream().ReadAsync(arrBytes);
+            imageBase64 = Convert.ToBase64String(arrBytes);
+            imageUrl = null;
+            await ImagenSeleccionada.InvokeAsync(imageBase64);
+            StateHasChanged();
+        }
+    }
+}

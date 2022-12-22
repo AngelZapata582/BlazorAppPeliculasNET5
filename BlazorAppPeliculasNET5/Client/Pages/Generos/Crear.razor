@@ -1,4 +1,5 @@
 ﻿@page "/generos/crear"
+@inject NavigationManager navigation
 <h3>Crear</h3>
 
 <GeneroForm Genero="Genero" Save="Save"></GeneroForm>
@@ -9,5 +10,6 @@
     private void Save()
     {
         Console.WriteLine($"Nombre {Genero.Name}");
+        navigation.NavigateTo("/generos");
     }
 }
