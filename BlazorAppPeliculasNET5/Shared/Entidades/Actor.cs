@@ -13,5 +13,19 @@ namespace BlazorAppPeliculasNET5.Shared.Entidades
         public string? Biografia { get; set; }
         public string? Foto { get; set; }
         public DateTime? FechaNacimiento { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is Actor a2)
+            {
+                return Id == a2.Id;
+            }
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
     }
 }

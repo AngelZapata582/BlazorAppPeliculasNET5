@@ -2,14 +2,24 @@
 @inject NavigationManager navigationManager
 <h3>Crear Pelicula</h3>
 
-<PeliculaForm Pelicula="Pelicula" OnValidSubmit="Save"></PeliculaForm>
+<PeliculaForm Pelicula="Pelicula" OnValidSubmit="Save" GenerosNoSeleccionados="GenerosNoSeleccionados"></PeliculaForm>
 
 @code {
     private Pelicula Pelicula = new Pelicula();
+    private List<Genero> GenerosNoSeleccionados = new List<Genero>();
+
+    protected override void OnInitialized()
+    {
+        GenerosNoSeleccionados = new List<Genero>()
+        {
+            new Genero() { Id = 1, Name = "Comedia"},
+            new Genero() { Id = 2, Name = "Romance"},
+            new Genero() { Id = 3, Name = "Fantasia"}
+        };
+    }
 
     void Save()
     {
-        Console.WriteLine("Pelicula creada");
         navigationManager.NavigateTo("pelicula");
     }
 }

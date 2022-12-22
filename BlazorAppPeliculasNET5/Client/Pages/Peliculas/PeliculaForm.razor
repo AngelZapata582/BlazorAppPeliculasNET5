@@ -24,11 +24,38 @@
     <div class="mb-3 form-markdown">
         <InputMarkdown @bind-Value="Pelicula.Resumen" For="@(()=>Pelicula.Resumen)" Label="Resumen"/>
     </div>
+
+    <div class="mb-3">
+        <label>Generos</label>
+        <div>
+            <SelectorMultiple Seleccionados="Seleccionados" NoSeleccionado="NoSeleccionado"/>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label>Actores</label>
+        <div>
+            <SelectorMultipleTypeahead Context="Actor" SearchMethod="BuscarActor" ElementosSeleccionados="ActoresSeleccionados">
+                <MyListTemplate>
+                    @Actor.Nombre
+                </MyListTemplate>
+                <MyResultTemplate>
+                    <img style="width:50px" src="@Actor.Foto" />
+                    @Actor.Nombre
+                </MyResultTemplate>
+            </SelectorMultipleTypeahead>
+        </div>
+    </div>
     <button type="submit" class="btn btn-success">Guardar</button>
 </EditForm>
 @code {
     [Parameter] public Pelicula Pelicula { get; set; } = null!;
     [Parameter] public EventCallback OnValidSubmit { set; get; }
+    [Parameter] public List<Genero> GenerosSeleccionados { set; get; } = new List<Genero>();
+    [Parameter] public List<Genero> GenerosNoSeleccionados { set; get; } = new List<Genero>();
+    private List<SelectorMultipleModel> Seleccionados { get; set; } = new List<SelectorMultipleModel>();
+    private List<SelectorMultipleModel> NoSeleccionado { get; set; } = new List<SelectorMultipleModel>();
+    [Parameter] public List<Actor> ActoresSeleccionados { get; set; } = new List<Actor>();
     private string? imagenUrl;
 
     protected override void OnInitialized()
@@ -38,11 +65,21 @@
             imagenUrl = Pelicula.Poster;
             Pelicula.Poster = null;
         }
+
+        Seleccionados = GenerosSeleccionados.Select(x=>new SelectorMultipleModel(x.Id.ToString(), x.Name)).ToList();
+        NoSeleccionado = GenerosNoSeleccionados.Select(x => new SelectorMultipleModel(x.Id.ToString(), x.Name)).ToList();
     }
 
     private void ImagenSeleccionada(String imagenBase64)
     {
         Pelicula.Poster = imagenBase64;
         imagenUrl = null;
+    }
+
+    private async Task<IEnumerable<Actor>> BuscarActor(string searText){
+        return new List<Actor>(){
+            new Actor{Id = 1, Nombre = "Keanu Reeves", Foto="https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcTkqugX0WLc78TSUXjzYAQvwT7nqU8vJknuJGldrNv0FO7kD8vl"},
+            new Actor{Id = 2, Nombre = "Will Smith", Foto="https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQbuF86tSHODHWHJRusio04zBWZHRNgFJdu-jyiWgkIbBC4-tuT"}
+        };
     }
 }
