@@ -1,5 +1,6 @@
 ﻿using BlazorAppPeliculasNET5.Shared.Entidades;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Threading.Tasks;
 
 namespace BlazorAppPeliculasNET5.Server.Controllers

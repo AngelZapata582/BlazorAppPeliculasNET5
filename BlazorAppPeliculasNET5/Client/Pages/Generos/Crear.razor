@@ -15,7 +15,8 @@
 
         if (httpResponse.Error)
         {
-            await Swal.FireAsync("Error", "Hubo un error", SweetAlertIcon.Error);
+            var mensajeError = await httpResponse.ObtenerMensageError();
+            await Swal.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
         }
         else
         {
