@@ -1,6 +1,8 @@
 ﻿using BlazorAppPeliculasNET5.Shared.Entidades;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace BlazorAppPeliculasNET5.Server.Controllers
@@ -22,6 +24,12 @@ namespace BlazorAppPeliculasNET5.Server.Controllers
             context.Add(genero);
             await context.SaveChangesAsync();
             return Ok(genero);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Genero>>> Get()
+        {
+            return await context.Generos.ToListAsync();
         }
     }
 }

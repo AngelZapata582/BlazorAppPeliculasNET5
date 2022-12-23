@@ -1,25 +1,44 @@
 ﻿@page "/peliculas/crear"
 @inject NavigationManager navigationManager
+@inject IRepositorio repositorio
+@inject SweetAlertService Swal
 <h3>Crear Pelicula</h3>
 
-<PeliculaForm Pelicula="Pelicula" OnValidSubmit="Save" GenerosNoSeleccionados="GenerosNoSeleccionados"></PeliculaForm>
+@if (!ShowForm)
+{
+    <p>Cargando...</p>
+}
+else
+{
+    <PeliculaForm Pelicula="Pelicula" 
+        OnValidSubmit="Save" 
+        GenerosNoSeleccionados="GenerosNoSeleccionados"></PeliculaForm>
+}
 
 @code {
     private Pelicula Pelicula = new Pelicula();
     private List<Genero> GenerosNoSeleccionados = new List<Genero>();
+    private bool ShowForm = false;
 
-    protected override void OnInitialized()
+    protected async override Task OnInitializedAsync()
     {
-        GenerosNoSeleccionados = new List<Genero>()
-        {
-            new Genero() { Id = 1, Name = "Comedia"},
-            new Genero() { Id = 2, Name = "Romance"},
-            new Genero() { Id = 3, Name = "Fantasia"}
-        };
+        var responseHttp = await repositorio.Get<List<Genero>>("api/generos");
+        GenerosNoSeleccionados = responseHttp.Response;
+        ShowForm = true;
     }
 
-    void Save()
+    async void Save()
     {
-        navigationManager.NavigateTo("pelicula");
+        var httpRespone = await repositorio.Post<Pelicula,Pelicula>("api/peliculas", Pelicula);
+        if (httpRespone.Error)
+        {
+            var mensajeError = await httpRespone.ObtenerMensageError();
+            await Swal.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
+        }
+        else
+        {
+            var pelicula = httpRespone.Response;
+            navigationManager.NavigateTo($"/peliculas/{pelicula.Id}/{Pelicula.Titulo.Replace(" ","-")}");
+        }
     }
 }

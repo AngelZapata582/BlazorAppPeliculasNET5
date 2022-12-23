@@ -1,4 +1,4 @@
-﻿<EditForm Model="Pelicula" OnValidSubmit="@OnValidSubmit">
+﻿<EditForm Model="Pelicula" OnValidSubmit="@OnDateAnnotationValidated">
     <DataAnnotationsValidator/>
     <div class="mb-3">
         <label>Titulo: </label>
@@ -12,6 +12,13 @@
         <div>
             <InputCheckbox id="encartelera" @bind-Value="Pelicula.EnCartelera"/>
             <ValidationMessage For="@(()=>Pelicula.EnCartelera)"/>
+        </div>
+    </div>
+    <div class="mb-3">
+        <label>Trailer: </label>
+        <div>
+            <InputText class="form-control" @bind-Value="Pelicula.Trailer" />
+            <ValidationMessage For="@(()=>Pelicula.Trailer)" />
         </div>
     </div>
     <div class="mb-3">
@@ -37,7 +44,7 @@
         <div>
             <SelectorMultipleTypeahead Context="Actor" SearchMethod="BuscarActor" ElementosSeleccionados="ActoresSeleccionados">
                 <MyListTemplate>
-                    @Actor.Nombre
+                    @Actor.Nombre / <input type="text" placeholder="Pesonaje" @bind="Actor.Personaje"/>
                 </MyListTemplate>
                 <MyResultTemplate>
                     <img style="width:50px" src="@Actor.Foto" />
@@ -81,5 +88,15 @@
             new Actor{Id = 1, Nombre = "Keanu Reeves", Foto="https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcTkqugX0WLc78TSUXjzYAQvwT7nqU8vJknuJGldrNv0FO7kD8vl"},
             new Actor{Id = 2, Nombre = "Will Smith", Foto="https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQbuF86tSHODHWHJRusio04zBWZHRNgFJdu-jyiWgkIbBC4-tuT"}
         };
+    }
+
+    private async Task OnDateAnnotationValidated()
+    {
+        Pelicula.GeneroPeliculas = Seleccionados
+        .Select(x => new GeneroPelicula { GeneroId = int.Parse(x.Llave) }).ToList();
+        Pelicula.PeliculasActor = ActoresSeleccionados
+        .Select(x => new PeliculaActor { ActorId = x.Id, Personaje = x.Personaje }).ToList();
+        await OnValidSubmit.InvokeAsync();
+
     }
 }

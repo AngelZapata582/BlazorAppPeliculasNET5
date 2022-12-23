@@ -10,11 +10,11 @@
 		@Cargando
 	}
 }
-else if (listado.Count is 0)
+else if (listado.Count == 0)
 {
 	@if (NoHayRegistros is null)
 	{
-		<p>No hay peliculas.</p>
+		<p>No hay registros.</p>
 	}
 	else
 	{
@@ -23,15 +23,23 @@ else if (listado.Count is 0)
 }
 else
 {
-	@foreach (GenericParam elemento in listado)
+	if(Registros is not null)
 	{
-		@Registros(elemento);
+		@foreach (GenericParam elemento in listado)
+		{
+			@Registros(elemento)
+		}
+	}
+	else
+	{
+		@RegistrosCompletos
 	}
 }
 
 @code {
-    [Parameter] public RenderFragment Cargando { get; set; } = null!;
-    [Parameter] public RenderFragment NoHayRegistros { get; set; } = null!;
-	[Parameter] public RenderFragment<GenericParam> Registros { get; set; }
-    [Parameter] public List<GenericParam> listado { get; set; } = null!;
+	[Parameter] public RenderFragment Cargando { get; set; } = null!;
+	[Parameter] public RenderFragment NoHayRegistros { get; set; } = null!;
+	[Parameter] public RenderFragment<GenericParam> Registros { get; set; } = null!;
+	[Parameter] public RenderFragment RegistrosCompletos { get; set; } = null!;
+	[Parameter] public List<GenericParam> listado { get; set; } = null!;
 }

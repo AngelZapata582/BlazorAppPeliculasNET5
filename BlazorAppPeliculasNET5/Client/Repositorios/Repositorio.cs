@@ -10,7 +10,7 @@ namespace BlazorAppPeliculasNET5.Client.Repositorios
 {
 
     //centraliza el servicio
-    public class Repositorio: IRepositorio
+    public class Repositorio : IRepositorio
     {
         private readonly HttpClient _httpClient;
 
@@ -18,13 +18,52 @@ namespace BlazorAppPeliculasNET5.Client.Repositorios
         {
             _httpClient = httpClient;
         }
+        private JsonSerializerOptions OpcionesDefaults => new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
+
+        public async Task<HttpResponceWrapper<T>> Get<T>(string url)
+        {
+            var respuestaHttp = await _httpClient.GetAsync(url);
+            if (respuestaHttp.IsSuccessStatusCode)
+            {
+                var respuesta = await DeserializarObjeto<T>(respuestaHttp, OpcionesDefaults);
+                return new HttpResponceWrapper<T>(respuesta, error: false, respuestaHttp);
+            }
+            else
+            {
+                return new HttpResponceWrapper<T>(default, error: true, respuestaHttp);
+            }
+        }
 
         public async Task<HttpResponceWrapper<object>> Post<T>(string url, T enviar)
         {
             var enviarJSON = JsonSerializer.Serialize(enviar);
             var enviarContext = new StringContent(enviarJSON, Encoding.UTF8, "application/json");
-            var responseHttp = await _httpClient.PostAsync(url,enviarContext);
+            var responseHttp = await _httpClient.PostAsync(url, enviarContext);
             return new HttpResponceWrapper<object>(null, !responseHttp.IsSuccessStatusCode, responseHttp);
+        }
+
+        public async Task<HttpResponceWrapper<TResponse>> Post<T, TResponse>(string url, T enviar)
+        {
+            var enviarJSON = JsonSerializer.Serialize(enviar);
+            var enviarContext = new StringContent(enviarJSON, Encoding.UTF8, "application/json");
+            var responseHttp = await _httpClient.PostAsync(url, enviarContext);
+
+            if (responseHttp.IsSuccessStatusCode)
+            {
+                var response = await DeserializarObjeto<TResponse>(responseHttp, OpcionesDefaults);
+                return new HttpResponceWrapper<TResponse>(response, error: false, responseHttp);
+            }
+
+            return new HttpResponceWrapper<TResponse>(default, !responseHttp.IsSuccessStatusCode, responseHttp);
+        }
+
+        private async Task<T> DeserializarObjeto<T>(HttpResponseMessage httpResponse, JsonSerializerOptions jsonOptions)
+        {
+            var respuestString = await httpResponse.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<T>(respuestString, jsonOptions);
         }
 
         public List<Pelicula> ObtenerPeliculas()
