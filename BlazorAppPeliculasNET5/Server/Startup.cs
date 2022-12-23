@@ -1,3 +1,4 @@
+using BlazorAppPeliculasNET5.Server.Helpers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -28,6 +29,9 @@ namespace BlazorAppPeliculasNET5.Server
             services.AddRazorPages();
             services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddTransient<IAlmacenamiento, AlmacenamientoAzure>();
+            //services.AddTransient<IAlmacenamiento, AlmacenamientoLocal>();
+            services.AddHttpContextAccessor();//permite acceder al contexto http para obtener el host
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
