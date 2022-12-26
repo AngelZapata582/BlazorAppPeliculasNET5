@@ -1,15 +1,24 @@
 ﻿@page "/"
 @inject IRepositorio repositorio
 <div>
-    <ListadoPeliculas Peliculas="Peliculas"></ListadoPeliculas>
+	<h3>Peliculas en cartelera</h3>
+    <ListadoPeliculas Peliculas="Cartelera"></ListadoPeliculas>
+</div>
+
+<div>
+	<h3>Proximos estrenos</h3>
+    <ListadoPeliculas Peliculas="Estrenos"></ListadoPeliculas>
 </div>
 
 @code {
-	public List<Pelicula> Peliculas { get; set; } = null!;
+	public List<Pelicula> Cartelera { get; set; } = null!;
+	public List<Pelicula> Estrenos { get; set; } = null!;
 
-	protected override void OnInitialized()
+	protected override async Task OnInitializedAsync()
 	{
-		Peliculas = repositorio.ObtenerPeliculas();
+		var responseHttp = await repositorio.Get<HomePageDTO>("api/peliculas");
+		Estrenos = responseHttp.Response.PeliculasDeEstreno;
+		Cartelera = responseHttp.Response.PeliculasEnCartelera;
 	}
 
 }

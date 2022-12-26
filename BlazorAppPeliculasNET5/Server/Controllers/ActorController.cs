@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace BlazorAppPeliculasNET5.Server.Controllers
@@ -39,6 +40,19 @@ namespace BlazorAppPeliculasNET5.Server.Controllers
         public async Task<ActionResult<IEnumerable<Actor>>> Get()
         {
             return await context.Actores.ToListAsync();
+        }
+
+        [HttpGet("buscar/{texto}")]
+        public async Task<ActionResult<List<Actor>>> Get(string texto)
+        {
+            if(string.IsNullOrWhiteSpace(texto))
+            {
+                return new List<Actor>();
+            }
+            return await context.Actores
+                .Where(x => x.Nombre.ToLower().Contains(texto.ToLower()))
+                .Take(5)
+                .ToListAsync();
         }
     }
 }

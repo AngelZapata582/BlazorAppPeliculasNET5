@@ -1,11 +1,19 @@
 ﻿@inject IJSRuntime js
-<h3>Listado de Peliculas</h3>
 
 <div style="display: flex; flex-wrap: wrap; align-items: center;">
 	<ListadoGenerico listado="Peliculas">
 		<Registros>
 			<PeliculaIndividual Pelicula="context" EliminarPelicula="Eliminar"></PeliculaIndividual>
 		</Registros>
+		<NoHayRegistros>
+			<p>No hay peliculas.</p>
+		</NoHayRegistros>
+		<Cargando>
+			<div class="d-flex justify-content-center">
+				<div class="spinner-border" role="status">
+				</div>
+			</div>
+		</Cargando>
 	</ListadoGenerico>
 </div>
 

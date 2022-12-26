@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Linq;
+using System.Text.Json.Serialization;
 
 namespace BlazorAppPeliculasNET5.Server
 {
@@ -25,7 +26,11 @@ namespace BlazorAppPeliculasNET5.Server
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddControllersWithViews();
+            services.AddControllersWithViews()
+                //                                  evita errores en los modelos con referencias ciclicas o repetitivas
+                .AddJsonOptions(opciones => { opciones.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+                    opciones.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+                });//preserve = ignorecyles
             services.AddRazorPages();
             services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));

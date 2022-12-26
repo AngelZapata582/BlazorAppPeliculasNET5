@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace BlazorAppPeliculasNET5.Client.Repositorios
@@ -20,6 +21,7 @@ namespace BlazorAppPeliculasNET5.Client.Repositorios
         }
         private JsonSerializerOptions OpcionesDefaults => new JsonSerializerOptions
         {
+            ReferenceHandler = ReferenceHandler.Preserve, //evita el error ciclico de referencia de los modelos al hacer una peticion
             PropertyNameCaseInsensitive = true
         };
 

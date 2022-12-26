@@ -23,6 +23,6 @@
 
 	protected override void OnInitialized()
 	{
-		URLPelicula = $"Pelicula/";
+		URLPelicula = $"peliculas/{Pelicula.Id}/{Pelicula.Titulo.Replace(" ","-")}";
 	}
 }

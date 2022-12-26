@@ -1,4 +1,5 @@
-﻿<EditForm Model="Pelicula" OnValidSubmit="@OnDateAnnotationValidated">
+﻿@inject IRepositorio repositorio
+<EditForm Model="Pelicula" OnValidSubmit="@OnDateAnnotationValidated">
     <DataAnnotationsValidator/>
     <div class="mb-3">
         <label>Titulo: </label>
@@ -84,10 +85,8 @@
     }
 
     private async Task<IEnumerable<Actor>> BuscarActor(string searText){
-        return new List<Actor>(){
-            new Actor{Id = 1, Nombre = "Keanu Reeves", Foto="https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcTkqugX0WLc78TSUXjzYAQvwT7nqU8vJknuJGldrNv0FO7kD8vl"},
-            new Actor{Id = 2, Nombre = "Will Smith", Foto="https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQbuF86tSHODHWHJRusio04zBWZHRNgFJdu-jyiWgkIbBC4-tuT"}
-        };
+        var respuestaHttp = await repositorio.Get<List<Actor>>($"api/actores/buscar/{searText}");
+        return respuestaHttp.Response;
     }
 
     private async Task OnDateAnnotationValidated()
