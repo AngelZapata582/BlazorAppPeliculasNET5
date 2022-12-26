@@ -11,5 +11,6 @@ namespace BlazorAppPeliculasNET5.Client.Repositorios
         List<Pelicula> ObtenerPeliculas();
         Task<HttpResponceWrapper<object>> Post<T>(string url, T enviar);
         Task<HttpResponceWrapper<TResponse>> Post<T, TResponse>(string url, T enviar);
+        Task<HttpResponceWrapper<object>> Put<T>(string url, T enviar);
     }
 }

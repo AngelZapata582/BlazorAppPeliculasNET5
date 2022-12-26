@@ -1,22 +1,56 @@
 ﻿@page "/actores/editar/{ActorId:int}"
+@inject IRepositorio repositorio
+@inject SweetAlertService Swal
+@inject NavigationManager navigate
 <h3>Editar</h3>
-<ActoresForm Actor="Actor" OnSubmitValid="Edit"></ActoresForm>
+@if (Actor is null)
+{
+    <div class="d-flex justify-content-center">
+        <div class="spinner-border" role="status">
+        </div>
+    </div>
+}
+else
+{
+    <ActoresForm Actor="Actor" OnSubmitValid="Edit"></ActoresForm>
+}
 @code {
     [Parameter] public int ActorId { get; set; }
     Actor Actor = new Actor();
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        Actor = new Actor
+        var responseHttp = await repositorio.Get<Actor>($"api/actores/{ActorId}");
+        if (responseHttp.Error)
         {
-            Id = ActorId,
-            Nombre = "Angel",
-            FechaNacimiento = DateTime.Today
-        };
+            if(responseHttp.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                navigate.NavigateTo("actores");
+            }
+            else
+            {
+                var messageError = await responseHttp.ObtenerMensageError();
+                await Swal.FireAsync("Error", messageError, SweetAlertIcon.Error);
+            }
+        }
+        else
+        {
+            Actor = responseHttp.Response;
+        }
     }
 
-    private void Edit()
+    private async Task Edit()
     {
-        
+        var responseHttp = await repositorio.Put("api/actores", Actor);
+
+        if (responseHttp.Error)
+        {
+            var errorMessage = await responseHttp.ObtenerMensageError();
+            await Swal.FireAsync("Error", errorMessage, SweetAlertIcon.Error);
+        }
+        else
+        {
+            navigate.NavigateTo("actores");
+        }
     }
 }

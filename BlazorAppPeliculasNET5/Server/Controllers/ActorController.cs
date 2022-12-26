@@ -1,4 +1,5 @@
-﻿using BlazorAppPeliculasNET5.Server.Helpers;
+﻿using AutoMapper;
+using BlazorAppPeliculasNET5.Server.Helpers;
 using BlazorAppPeliculasNET5.Shared.Entidades;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,12 +16,14 @@ namespace BlazorAppPeliculasNET5.Server.Controllers
     {
         private readonly ApplicationDbContext context;
         private readonly IAlmacenamiento almacenamiento;
+        private readonly IMapper mapper;
         private readonly string contenedor = "personas";
 
-        public ActorController(ApplicationDbContext context, IAlmacenamiento almacenador)
+        public ActorController(ApplicationDbContext context, IAlmacenamiento almacenador, IMapper mapper)
         {
             this.context = context;
             this.almacenamiento= almacenador;
+            this.mapper = mapper;
         }
 
         [HttpPost]
@@ -53,6 +56,37 @@ namespace BlazorAppPeliculasNET5.Server.Controllers
                 .Where(x => x.Nombre.ToLower().Contains(texto.ToLower()))
                 .Take(5)
                 .ToListAsync();
+        }
+
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<Actor>> Get(int id)
+        {
+            var actor = await context.Actores.Where(actor => actor.Id == id).FirstOrDefaultAsync();
+            if(actor is null)
+            {
+                return NotFound();
+            }
+            return Ok(actor);
+        }
+
+        [HttpPut]
+        public async Task<ActionResult> Put(Actor actor)
+        {
+            var actorDB = await context.Actores.FirstOrDefaultAsync(a => a.Id == actor.Id);
+            if (actorDB is null)
+            {
+                return NotFound();
+            }
+            //toma las propiedades de actor y las asigna a actorDB
+            actorDB = mapper.Map(actor, actorDB);
+
+            if (!string.IsNullOrWhiteSpace(actor.Foto))
+            {
+                var fotoActor = Convert.FromBase64String(actor.Foto);
+                actorDB.Foto = await almacenamiento.EditarArchivo(fotoActor, ".jpg", contenedor, actorDB.Foto);
+            }
+            await context.SaveChangesAsync();
+            return Ok(actorDB);
         }
     }
 }

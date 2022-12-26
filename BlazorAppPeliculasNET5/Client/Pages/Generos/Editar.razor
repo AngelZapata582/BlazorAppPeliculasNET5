@@ -1,17 +1,57 @@
 ﻿@page "/generos/editar/{GeneroId:int}"
+@inject IRepositorio repositorio
+@inject SweetAlertService Swal
+@inject NavigationManager navigation
 <h3>Editar</h3>
-<GeneroForm Genero="Genero" Save="Save"></GeneroForm>
+@if (Genero is null)
+{
+    <div class="d-flex justify-content-center">
+        <div class="spinner-border" role="status">
+        </div>
+    </div>
+}
+else
+{
+    <GeneroForm Genero="Genero" Save="Save"></GeneroForm>
+}
 
 @code {
     [Parameter] public int GeneroId { get; set; }
     private Genero Genero;
-    protected override void OnInitialized()
+
+    protected override async Task OnInitializedAsync()
     {
-        Genero = new Genero() { Id = GeneroId, Name = "Comedia" };
+        var responseHttp = await repositorio.Get<Genero>($"api/generos/{GeneroId}");
+        if (responseHttp.Error)
+        {
+            if(responseHttp.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                navigation.NavigateTo("generos");
+            }
+            else
+            {
+                var errorMessage = await responseHttp.ObtenerMensageError();
+                await Swal.FireAsync("Error", errorMessage, SweetAlertIcon.Error);
+            }
+        }
+        else
+        {
+            Genero = responseHttp.Response;
+        }
     }
 
-    private void Save()
+    private async void Save()
     {
-        Console.WriteLine($"Id: {Genero.Id}, Name:{Genero.Name}");
+        var responseHttp = await repositorio.Put("api/generos", Genero);
+
+        if (responseHttp.Error)
+        {
+            var errorMessage = await responseHttp.ObtenerMensageError();
+            await Swal.FireAsync("Error", errorMessage, SweetAlertIcon.Error);
+        }
+        else
+        {
+            navigation.NavigateTo("generos");
+        }
     }
 }

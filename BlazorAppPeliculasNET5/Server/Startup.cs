@@ -37,6 +37,7 @@ namespace BlazorAppPeliculasNET5.Server
             services.AddTransient<IAlmacenamiento, AlmacenamientoAzure>();
             //services.AddTransient<IAlmacenamiento, AlmacenamientoLocal>();
             services.AddHttpContextAccessor();//permite acceder al contexto http para obtener el host
+            services.AddAutoMapper(typeof(Program));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
