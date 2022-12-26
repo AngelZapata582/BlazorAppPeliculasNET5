@@ -100,5 +100,23 @@ namespace BlazorAppPeliculasNET5.Server.Controllers
             await context.SaveChangesAsync();
             return Ok(pelicula);
         }
+
+        [HttpGet("actualizar/{id}")]
+        public async Task<ActionResult<UpdatePeliculaDTO>> PutGet(int id)
+        {
+            //usa el metodo de la misma clase
+            var peliculaResult = await Get(id);
+            if (peliculaResult.Result is NotFoundResult) { return NotFound(); }
+            var pelicula = peliculaResult.Value;
+            var generosSeleccionadosIds = pelicula.Generos.Select(x => x.Id).ToList();
+            var generosNoSeleccionados = await context.Generos.Where(x => !generosSeleccionadosIds.Contains(x.Id)).ToListAsync();
+
+            var modelo = new UpdatePeliculaDTO();
+            modelo.Pelicula = pelicula.Pelicula;
+            modelo.GenerosNoSeleccionados = generosNoSeleccionados;
+            modelo.GenerosSeleccionados = pelicula.Generos;
+            modelo.Actores = pelicula.Actores;
+            return modelo;
+        }
     }
 }

@@ -28,7 +28,7 @@
     [Parameter] public string Label { get; set; } = "Archivo";
     [Parameter] public string imageUrl { get; set; } = null!;
     [Parameter] public EventCallback<string> ImagenSeleccionada { get; set; }
-    private string? imageBase64;
+    private string imageBase64 { get; set; } = null!;
 
     private async Task OnChange(InputFileChangeEventArgs e)
     {

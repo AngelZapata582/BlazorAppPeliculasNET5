@@ -59,12 +59,12 @@
 @code {
     [Parameter] public Pelicula Pelicula { get; set; } = null!;
     [Parameter] public EventCallback OnValidSubmit { set; get; }
-    [Parameter] public List<Genero> GenerosSeleccionados { set; get; } = new List<Genero>();
-    [Parameter] public List<Genero> GenerosNoSeleccionados { set; get; } = new List<Genero>();
     private List<SelectorMultipleModel> Seleccionados { get; set; } = new List<SelectorMultipleModel>();
     private List<SelectorMultipleModel> NoSeleccionado { get; set; } = new List<SelectorMultipleModel>();
     [Parameter] public List<Actor> ActoresSeleccionados { get; set; } = new List<Actor>();
-    private string? imagenUrl;
+    [Parameter] public List<Genero> GenerosSeleccionados { get; set; } = new List<Genero>();
+    [Parameter] public List<Genero> GenerosNoSeleccionados { get; set; } = new List<Genero>();
+    private string imagenUrl { get; set; } = null!;
 
     protected override void OnInitialized()
     {
