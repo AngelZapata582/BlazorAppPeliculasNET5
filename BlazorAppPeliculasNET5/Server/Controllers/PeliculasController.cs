@@ -1,11 +1,14 @@
 ﻿using AutoMapper;
+using BlazorAppPeliculasNET5.Client.Shared;
 using BlazorAppPeliculasNET5.Server.Helpers;
 using BlazorAppPeliculasNET5.Shared.DTOs;
 using BlazorAppPeliculasNET5.Shared.Entidades;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace BlazorAppPeliculasNET5.Server.Controllers
@@ -84,6 +87,38 @@ namespace BlazorAppPeliculasNET5.Server.Controllers
             return modelo;
         }
 
+        [HttpGet("filtrar")]
+        public async Task<ActionResult<List<Pelicula>>> Get([FromQuery] ParametrosBusquedaPelicula parametros)
+        {
+            var peliculasQueryable = context.Peliculas.AsQueryable();
+            if (!string.IsNullOrWhiteSpace(parametros.Titulo))
+            {
+                peliculasQueryable = peliculasQueryable.Where(x => x.Titulo.ToLower().Contains(parametros.Titulo.ToLower()));
+            }else if (parametros.EnCartelera)
+            {
+                peliculasQueryable = peliculasQueryable.Where(x => x.EnCartelera);
+            }else if (parametros.GeneroId != 0)
+            {
+                peliculasQueryable = peliculasQueryable.Where(x => x.GeneroPeliculas.Select(y => y.GeneroId).Contains(parametros.GeneroId));
+            }
+
+            await HttpContext.InsertarParametrosPaginacionRespuesta(peliculasQueryable, parametros.CantidadRegistros);
+            var peliculas = await peliculasQueryable.Paginar(parametros.Paginacion).ToListAsync();
+            return peliculas;
+        }
+
+        public class ParametrosBusquedaPelicula
+        {
+            public int Pagina { get; set; } = 1;
+            public int CantidadRegistros { get; set; } = 10;
+            public PaginacionDTO Paginacion { get { return new PaginacionDTO() { pagina = Pagina, registros = CantidadRegistros }; } }
+            public string Titulo { get; set; }
+            public int GeneroId { get; set; }
+            public bool EnCartelera { get; set; }
+            public bool Estreno { get; set; }
+            public bool MasVotados { get; set; }
+
+        }
         [HttpPost]
         public async Task<ActionResult<int>> Post(Pelicula pelicula)
         {
