@@ -10,7 +10,12 @@
 	<div>
 		<a class="btn btn-warning" href="/peliculas/editar/@Pelicula.Id">Editar</a>
 		<button class="btn btn-danger" type="button"
-		@onclick="@(()=>EliminarPelicula.InvokeAsync(Pelicula))">Eliminar</button>
+		@onclick="@(()=>EliminarPelicula.InvokeAsync(Pelicula))">
+			@if (loading)
+			{
+				<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+			}
+			Eliminar</button>
 	</div>
 </div>
 
@@ -18,11 +23,17 @@
 	[Parameter] public EventCallback<Pelicula> EliminarPelicula { get; set; }
 	[Parameter] public Pelicula Pelicula { get; set; } = null!;
 	[Parameter] public bool showing { get; set; } = false;
+	[Parameter] public bool loading { get; set; } = false;
 
 	private string URLPelicula = string.Empty;
 
 	protected override void OnInitialized()
 	{
 		URLPelicula = $"peliculas/{Pelicula.Id}/{Pelicula.Titulo.Replace(" ","-")}";
+	}
+
+	protected override async Task OnParametersSetAsync()
+	{
+		
 	}
 }

@@ -54,7 +54,12 @@
             </SelectorMultipleTypeahead>
         </div>
     </div>
-    <button type="submit" class="btn btn-success">Guardar</button>
+    <button type="submit" class="btn btn-success">
+        @if (loading)
+        {
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        }
+        Guardar</button>
 </EditForm>
 @code {
     [Parameter] public Pelicula Pelicula { get; set; } = null!;
@@ -64,6 +69,7 @@
     [Parameter] public List<Actor> ActoresSeleccionados { get; set; } = new List<Actor>();
     [Parameter] public List<Genero> GenerosSeleccionados { get; set; } = new List<Genero>();
     [Parameter] public List<Genero> GenerosNoSeleccionados { get; set; } = new List<Genero>();
+    [Parameter] public bool loading { get; set; } = false;
     private string imagenUrl { get; set; } = null!;
 
     protected override void OnInitialized()

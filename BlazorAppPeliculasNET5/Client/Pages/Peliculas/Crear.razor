@@ -12,13 +12,15 @@ else
 {
     <PeliculaForm Pelicula="Pelicula" 
         OnValidSubmit="Save" 
-        GenerosNoSeleccionados="GenerosNoSeleccionados"></PeliculaForm>
+        GenerosNoSeleccionados="GenerosNoSeleccionados"
+        loading="loading"></PeliculaForm>
 }
 
 @code {
     private Pelicula Pelicula = new Pelicula();
     private List<Genero> GenerosNoSeleccionados = new List<Genero>();
     private bool ShowForm = false;
+    private bool loading = false;
 
     protected async override Task OnInitializedAsync()
     {
@@ -29,14 +31,17 @@ else
 
     async void Save()
     {
+        loading = true;
         var httpRespone = await repositorio.Post<Pelicula,Pelicula>("api/peliculas", Pelicula);
         if (httpRespone.Error)
         {
+            loading = false;
             var mensajeError = await httpRespone.ObtenerMensageError();
             await Swal.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
         }
         else
         {
+            loading = false;
             var pelicula = httpRespone.Response;
             navigationManager.NavigateTo($"/peliculas/{pelicula.Id}/{Pelicula.Titulo.Replace(" ","-")}");
         }

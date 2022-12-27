@@ -1,15 +1,20 @@
 ﻿@page "/actores"
 @inject IRepositorio repositorio
+@inject NavigationManager navigation
+@inject SweetAlertService Swal
 <h3>Index</h3>
 <div class="mb-3">
     <a href="actores/crear" class="btn btn-info">Crear actor</a>
 </div>
+
+<Paginacion paginaActual="paginaActual" PaginaSeleccionada="PaginaSeleccionada" paginasTotales="paginasTotales"></Paginacion>
+
 <ListadoGenerico listado="Actores">
     <RegistrosCompletos>
         <table class="table table-striped">
             <thead>
-            <th></th>
-            <th>Nombre</th>
+                <th></th>
+                <th>Nombre</th>
             </thead>
             <tbody>
                 @foreach (var item in Actores)
@@ -17,7 +22,7 @@
                     <tr>
                         <td>
                             <a href="/actores/editar/@item.Id" class="btn btn-success">Editar</a>
-                            <a class="btn btn-danger">Borrar</a>
+                            <a class="btn btn-danger text-light" @onclick="@(()=>Borrar(item))">Borrar</a>
                         </td>
                         <td>
                             @item.Nombre
@@ -30,11 +35,45 @@
 </ListadoGenerico>
 @code {
     List<Actor> Actores = new List<Actor>();
+    private int paginaActual = 1;
+    private int paginasTotales;
 
     protected override async Task OnInitializedAsync()
     {
-        var responseHttp = await repositorio.Get<List<Actor>>("api/actores");
+        await Cargar();
+    }
 
+    private async Task PaginaSeleccionada(int pagina)
+    {
+        paginaActual = pagina;
+        await Cargar(pagina);
+    }
+
+    private async Task Cargar(int pagina = 1)
+    {
+        var responseHttp = await repositorio.Get<List<Actor>>($"api/actores?pagina={pagina}");
         Actores = responseHttp.Response;
+        paginasTotales = int.Parse(responseHttp.HttpResponseMessage.Headers.GetValues("paginas").FirstOrDefault());
+    }
+
+    private async Task Borrar(Actor actor)
+    {
+        var responseHttp = await repositorio.Delete($"api/actores/{actor.Id}");
+        if (responseHttp.Error)
+        {
+            if (responseHttp.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                navigation.NavigateTo("/");
+            }
+            else
+            {
+                var errorMessage = await responseHttp.ObtenerMensageError();
+                await Swal.FireAsync("Error", errorMessage, SweetAlertIcon.Error);
+            }
+        }
+        else
+        {
+            await Cargar();
+        }
     }
 }

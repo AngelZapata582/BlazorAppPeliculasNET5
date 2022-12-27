@@ -1,0 +1,65 @@
+﻿<nav>
+    <ul class="pagination justify-content-center">
+
+        @foreach (var item in Enlace)
+        {
+            <li class="page-item @(item.Habilitada? null : "disabled") @(item.Activa ? "active" : null)" style="cursor:pointer"
+            @onclick="@(()=>PaginaSeleccionadaInterno(item))">
+                <a class="page-link">@item.Texto</a>
+            </li>
+        }
+
+    </ul>
+</nav>
+
+@code {
+    [Parameter] public int paginaActual { get; set; } = 1;
+    [Parameter] public int paginasTotales { get; set; }
+    [Parameter] public int Radio { get; set; } = 3;
+    [Parameter] public EventCallback<int> PaginaSeleccionada { get; set; }
+    List<PaginaModel> Enlace = new List<PaginaModel>();
+
+    protected override void OnParametersSet()
+    {
+        Enlace = new List<PaginaModel>();
+        var enlaceAnteriorHabilitado = paginaActual != 1;
+        var enlaceAnteriorPagina = paginaActual - 1;
+        Enlace.Add(new PaginaModel
+            {
+                Texto = "Anterior",
+                Pagina = enlaceAnteriorPagina,
+                Habilitada = enlaceAnteriorHabilitado
+
+            });
+        for (int i = 1; i <= paginasTotales; i++)
+        {
+            if (i >= paginaActual - Radio && i <= paginaActual + Radio)
+            {
+                Enlace.Add(new PaginaModel
+                    { Pagina = i, Texto = i.ToString(), Activa = paginaActual == i });
+            }
+        }
+        var enlaceSiguienteHabilitado = paginaActual != paginasTotales;
+        var enlaceSiguientePagina = paginaActual + 1;
+        Enlace.Add(new PaginaModel
+        {
+            Texto = "Siguiente",
+            Pagina = enlaceSiguientePagina,
+            Habilitada = enlaceSiguienteHabilitado
+        });
+    }
+
+    private async Task PaginaSeleccionadaInterno(PaginaModel model)
+    {
+        if (model.Pagina == paginaActual) { return; }
+        if (!model.Habilitada) { return; }
+        await PaginaSeleccionada.InvokeAsync(model.Pagina);
+    }
+    class PaginaModel
+    {
+        public string Texto { get; set; } = null!;
+        public int Pagina { get; set; }
+        public bool Habilitada { get; set; } = true;
+        public bool Activa { get; set; } = false;
+    }
+}

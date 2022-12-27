@@ -1,36 +1,61 @@
 ﻿@inject IJSRuntime js
+@inject IRepositorio repositorio
+@inject NavigationManager navigation
+@inject SweetAlertService Swal
 
 <div style="display: flex; flex-wrap: wrap; align-items: center;">
-	<ListadoGenerico listado="Peliculas">
-		<Registros>
-			<PeliculaIndividual Pelicula="context" EliminarPelicula="Eliminar"></PeliculaIndividual>
-		</Registros>
-		<NoHayRegistros>
-			<p>No hay peliculas.</p>
-		</NoHayRegistros>
-		<Cargando>
-			<div class="d-flex justify-content-center">
-				<div class="spinner-border" role="status">
-				</div>
-			</div>
-		</Cargando>
-	</ListadoGenerico>
+    <ListadoGenerico listado="Peliculas">
+        <Registros>
+            <PeliculaIndividual Pelicula="context" EliminarPelicula="Eliminar" loading="loading"></PeliculaIndividual>
+        </Registros>
+        <NoHayRegistros>
+            <p>No hay peliculas.</p>
+        </NoHayRegistros>
+        <Cargando>
+            <div class="d-flex justify-content-center">
+                <div class="spinner-border" role="status">
+                </div>
+            </div>
+        </Cargando>
+    </ListadoGenerico>
 </div>
 
 @code {
 
-	[Parameter]
-	public List<Pelicula> Peliculas { get; set; } = null!;
+    [Parameter]
+    public List<Pelicula> Peliculas { get; set; } = null!;
+    private bool loading = false;
 
-	private async Task Eliminar(Pelicula pelicula)
-	{
-		var confirm = await js.Confirm($"¿Desea borrar la pelicula {pelicula.Titulo}?");
-		if (confirm)
-		{
-			Console.WriteLine("Eliminando pelicula");
-			Peliculas.Remove(pelicula);
-		}
+    private async Task Eliminar(Pelicula pelicula)
+    {
+        var confirm = await Swal.FireAsync(new SweetAlertOptions
+            {
+                Title = "Confirmacion",
+                Text = $"¿Desea borrar la pelicula {pelicula.Titulo}?",
+                Icon = SweetAlertIcon.Warning,
+                ShowCancelButton = true,
+                ConfirmButtonText = "Aceptar",
+                CancelButtonText = "Cancelar"
+            });
+        if (!string.IsNullOrEmpty(confirm.Value))
+        {
+            loading = true;
+            var responseHttp = await repositorio.Delete($"api/peliculas/{pelicula.Id}");
 
-	}
+            if (responseHttp.Error)
+            {
+                loading = false;
+                var errorMessage = await responseHttp.ObtenerMensageError();
+                await Swal.FireAsync("Error", errorMessage, SweetAlertIcon.Error);
+
+            }
+            else
+            {
+                loading = false;
+                Peliculas.Remove(pelicula);
+            }
+        }
+
+    }
 
 }

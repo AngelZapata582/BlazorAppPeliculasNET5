@@ -76,6 +76,12 @@ namespace BlazorAppPeliculasNET5.Client.Repositorios
             return JsonSerializer.Deserialize<T>(respuestString, jsonOptions);
         }
 
+        public async Task<HttpResponceWrapper<object>> Delete(string url)
+        {
+            var responseHttp = await _httpClient.DeleteAsync(url);
+            return new HttpResponceWrapper<object>(null, !responseHttp.IsSuccessStatusCode, responseHttp);
+        }
+
         public List<Pelicula> ObtenerPeliculas()
         {
             return new List<Pelicula>()

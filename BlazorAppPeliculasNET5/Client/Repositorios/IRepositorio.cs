@@ -7,6 +7,7 @@ namespace BlazorAppPeliculasNET5.Client.Repositorios
     //cualquier clase que implemente esta interfaz debera implementar el metodo
     public interface IRepositorio
     {
+        Task<HttpResponceWrapper<object>> Delete(string url);
         Task<HttpResponceWrapper<T>> Get<T>(string url);
         List<Pelicula> ObtenerPeliculas();
         Task<HttpResponceWrapper<object>> Post<T>(string url, T enviar);

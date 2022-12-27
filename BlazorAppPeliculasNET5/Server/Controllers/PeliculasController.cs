@@ -151,5 +151,21 @@ namespace BlazorAppPeliculasNET5.Server.Controllers
             await context.SaveChangesAsync();
             return Ok(peliculaDb);
         }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> Delete(int id)
+        {
+            var pelicula = await context.Peliculas.FirstOrDefaultAsync(x => x.Id == id);
+            if (pelicula is null)
+            {
+                return NotFound(id);
+            }
+
+            context.Remove(pelicula);
+            await context.SaveChangesAsync();
+
+            await almacenamiento.EliminarArchivo(pelicula.Poster, contenedor);
+            return Ok(pelicula);
+        }
     }
 }
