@@ -50,8 +50,18 @@ else
         }
     }
 
-    private void Edit()
+    private async Task Edit()
     {
-        
+        var responseHttp = await repositorio.Put("api/peliculas", Pelicula);
+
+        if (responseHttp.Error)
+        {
+            var errorMessage = await responseHttp.ObtenerMensageError();
+            await Swal.FireAsync("Error", errorMessage, SweetAlertIcon.Error);
+        }
+        else
+        {
+            navigation.NavigateTo($"peliculas/{PeliculaId}/{Pelicula.Titulo.ToString().Replace(" ","-")}");
+        }
     }
 }

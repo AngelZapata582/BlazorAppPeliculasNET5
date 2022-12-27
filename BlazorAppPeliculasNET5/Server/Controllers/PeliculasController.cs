@@ -1,4 +1,5 @@
-﻿using BlazorAppPeliculasNET5.Server.Helpers;
+﻿using AutoMapper;
+using BlazorAppPeliculasNET5.Server.Helpers;
 using BlazorAppPeliculasNET5.Shared.DTOs;
 using BlazorAppPeliculasNET5.Shared.Entidades;
 using Microsoft.AspNetCore.Mvc;
@@ -15,12 +16,15 @@ namespace BlazorAppPeliculasNET5.Server.Controllers
     {
         private readonly ApplicationDbContext context;
         private readonly IAlmacenamiento almacenamiento;
+        private readonly IMapper mapper;
         private readonly string contenedor = "peliculas";
+        private readonly string extencion = ".jpg";
 
-        public PeliculasController(ApplicationDbContext context, IAlmacenamiento almacenamiento)
+        public PeliculasController(ApplicationDbContext context, IAlmacenamiento almacenamiento, IMapper mapper)
         {
             this.context = context;
             this.almacenamiento = almacenamiento;
+            this.mapper = mapper;
         }
 
         [HttpGet]
@@ -86,19 +90,24 @@ namespace BlazorAppPeliculasNET5.Server.Controllers
             if (!string.IsNullOrWhiteSpace(pelicula.Poster))
             {
                 var fotoActor = Convert.FromBase64String(pelicula.Poster);
-                pelicula.Poster = await almacenamiento.GuardarArchivo(fotoActor, ".jpg", contenedor);
+                pelicula.Poster = await almacenamiento.GuardarArchivo(fotoActor, extencion, contenedor);
             }
 
-            if(pelicula.PeliculasActor is not null)
+            OrdenarActores(pelicula);
+            context.Add(pelicula);
+            await context.SaveChangesAsync();
+            return Ok(pelicula);
+        }
+
+        private static void OrdenarActores(Pelicula pelicula)
+        {
+            if (pelicula.PeliculasActor is not null)
             {
                 for (int i = 0; i < pelicula.PeliculasActor.Count; i++)
                 {
                     pelicula.PeliculasActor[i].Orden = i + 1;
                 }
             }
-            context.Add(pelicula);
-            await context.SaveChangesAsync();
-            return Ok(pelicula);
         }
 
         [HttpGet("actualizar/{id}")]
@@ -117,6 +126,30 @@ namespace BlazorAppPeliculasNET5.Server.Controllers
             modelo.GenerosSeleccionados = pelicula.Generos;
             modelo.Actores = pelicula.Actores;
             return modelo;
+        }
+
+        [HttpPut]
+        public async Task<ActionResult> Put(Pelicula pelicula)
+        {
+            var peliculaDb = await context.Peliculas
+                .Include(x => x.GeneroPeliculas)
+                .Include(x => x.PeliculasActor)
+                .FirstOrDefaultAsync(x => x.Id == pelicula.Id);
+            if(peliculaDb is null)
+            {
+                return NotFound();
+            }
+
+            peliculaDb = mapper.Map(pelicula, peliculaDb);
+
+            if (!string.IsNullOrWhiteSpace(pelicula.Poster))
+            {
+                var poster = Convert.FromBase64String(pelicula.Poster);
+                peliculaDb.Poster = await almacenamiento.EditarArchivo(poster, extencion, contenedor, peliculaDb.Poster);
+            }
+            OrdenarActores(peliculaDb);
+            await context.SaveChangesAsync();
+            return Ok(peliculaDb);
         }
     }
 }
