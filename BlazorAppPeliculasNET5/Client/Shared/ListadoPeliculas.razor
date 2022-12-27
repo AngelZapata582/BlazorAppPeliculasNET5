@@ -6,7 +6,7 @@
 <div style="display: flex; flex-wrap: wrap; align-items: center;">
     <ListadoGenerico listado="Peliculas">
         <Registros>
-            <PeliculaIndividual Pelicula="context" EliminarPelicula="Eliminar" loading="loading"></PeliculaIndividual>
+            <PeliculaIndividual Pelicula="context" EliminarPelicula="Eliminar" loading="loading" @key="context.Id"></PeliculaIndividual>
         </Registros>
         <NoHayRegistros>
             <p>No hay peliculas.</p>

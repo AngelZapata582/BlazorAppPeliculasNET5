@@ -23,7 +23,7 @@ else
     </span>
     <div class="d-flex my-2">
         <span style="display: inline-block" class="mr-2">
-            <img src="@modelo.Pelicula.Poster" style="width:225px;height:315px;"/>
+            <img src="@modelo.Pelicula.Poster" style="width:225px;height:315px;" />
         </span>
         <iframe width="560" height="315" src="https://www.youtube.com/embed/@modelo.Pelicula.Trailer" title="YouTube video player" frameborder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
@@ -37,11 +37,19 @@ else
         <div class="d-flex flex-column">
             @foreach (var actor in modelo.Actores)
             {
-                <div class="mb-2">
-                    <img src="@actor.Foto" style="width:50px;"/>
-                    <span style="display: inline-block">@actor.Nombre</span>
-                    <span style="display: inline-block; width:45px"> ...</span>
-                    <spam>@actor.Personaje</spam>
+                <div class="mb-2 card col-12 col-md-3">
+                    <div class="row g-0">
+                        <div class="col-md-3 col-3 p-0">
+                            <img src="@actor.Foto" class="img-fluid rounded-lef" style="width:5rem;" />
+                        </div>
+                        <div class="col-md-9 col-9">
+                            <div class="card-body">
+                                <span style="display: inline-block">@actor.Nombre</span>
+                                <span style="display: inline-block; width:45px"> ...</span>
+                                <spam>@actor.Personaje</spam>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             }
         </div>
@@ -59,7 +67,7 @@ else
         if (responseHttp.Error)
         {
             var mensajeError = await responseHttp.ObtenerMensageError();
-            await Swal.FireAsync("Error",mensajeError,SweetAlertIcon.Error);
+            await Swal.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
         }
         else
         {

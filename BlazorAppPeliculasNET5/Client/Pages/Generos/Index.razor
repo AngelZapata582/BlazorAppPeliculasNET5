@@ -47,22 +47,34 @@
 
     private async Task Borrar(Genero genero)
     {
-        var responseHttp = await repositorio.Delete($"api/generos/{genero.Id}");
-        if (responseHttp.Error)
-        {
-            if (responseHttp.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
+        var confirm = await Swal.FireAsync(new SweetAlertOptions
             {
-                navigation.NavigateTo("/");
+                Title = "Confirmacion",
+                Text = $"¿Desea borrar el genero {genero.Name}?",
+                Icon = SweetAlertIcon.Warning,
+                ShowCancelButton = true,
+                ConfirmButtonText = "Aceptar",
+                CancelButtonText = "Cancelar"
+            });
+        if (!string.IsNullOrEmpty(confirm.Value))
+        {
+            var responseHttp = await repositorio.Delete($"api/generos/{genero.Id}");
+            if (responseHttp.Error)
+            {
+                if (responseHttp.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    navigation.NavigateTo("/");
+                }
+                else
+                {
+                    var errorMessage = await responseHttp.ObtenerMensageError();
+                    await Swal.FireAsync("Error", errorMessage, SweetAlertIcon.Error);
+                }
             }
             else
             {
-                var errorMessage = await responseHttp.ObtenerMensageError();
-                await Swal.FireAsync("Error", errorMessage, SweetAlertIcon.Error);
+                await Cargar();
             }
-        }
-        else
-        {
-            await Cargar();
-        }
+        }        
     }
 }
