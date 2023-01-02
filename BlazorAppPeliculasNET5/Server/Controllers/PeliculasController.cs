@@ -3,6 +3,8 @@ using BlazorAppPeliculasNET5.Client.Shared;
 using BlazorAppPeliculasNET5.Server.Helpers;
 using BlazorAppPeliculasNET5.Shared.DTOs;
 using BlazorAppPeliculasNET5.Shared.Entidades;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -15,6 +17,7 @@ namespace BlazorAppPeliculasNET5.Server.Controllers
 {
     [Route("api/peliculas")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "admin")]
     public class PeliculasController : ControllerBase
     {
         private readonly ApplicationDbContext context;
@@ -31,6 +34,7 @@ namespace BlazorAppPeliculasNET5.Server.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<HomePageDTO>> Get()
         {
             var limit = 6;
@@ -56,6 +60,7 @@ namespace BlazorAppPeliculasNET5.Server.Controllers
         }
 
         [HttpGet("{id:int}")]
+        [AllowAnonymous]
         public async Task<ActionResult<VisualizarPeliculaDTO>> Get(int id)
         {
             var pelicula = await context.Peliculas.Where(pelicula => pelicula.Id == id)
@@ -88,6 +93,7 @@ namespace BlazorAppPeliculasNET5.Server.Controllers
         }
 
         [HttpGet("filtrar")]
+        [AllowAnonymous]
         public async Task<ActionResult<List<Pelicula>>> Get([FromQuery] ParametrosBusquedaPelicula parametros)
         {
             var peliculasQueryable = context.Peliculas.AsQueryable();
