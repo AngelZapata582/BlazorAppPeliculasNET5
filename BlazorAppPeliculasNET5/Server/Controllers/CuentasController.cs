@@ -76,9 +76,9 @@ namespace BlazorAppPeliculasNET5.Server.Controllers
             JwtSecurityToken token = new JwtSecurityToken(
                 issuer: null,
                 audience:null,
-                claims:null,
-                expires:null,
-                signingCredentials:null);
+                claims:clains,
+                expires:expiration,
+                signingCredentials:creds);
 
             return new UserToken
             {

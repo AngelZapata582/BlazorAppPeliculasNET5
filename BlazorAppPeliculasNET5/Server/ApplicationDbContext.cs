@@ -25,6 +25,6 @@ namespace BlazorAppPeliculasNET5.Server
         public DbSet<Pelicula> Peliculas => Set<Pelicula>();
         public DbSet<GeneroPelicula> GenerosPeliculas => Set<GeneroPelicula>();
         public DbSet<PeliculaActor> PeliculasActores => Set<PeliculaActor>();
-
+        public DbSet<VotoPelicula> VotosPeliculas => Set<VotoPelicula>();
     }
 }
