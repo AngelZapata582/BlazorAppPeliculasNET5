@@ -2,6 +2,7 @@
 @inject IRepositorio repositorio
 @inject NavigationManager navigation
 @inject SweetAlertService Swal
+@attribute [Authorize(Roles = "admin")]
 <h3>Index Genero</h3>
 <div class="mb-3">
     <a class="btn btn-info" href="generos/crear">Agregar Genero</a>

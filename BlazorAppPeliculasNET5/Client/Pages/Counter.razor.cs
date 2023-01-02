@@ -1,6 +1,7 @@
 ﻿using BlazorAppPeliculasNET5.Client.Repositorios;
 using MathNet.Numerics.Statistics;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.JSInterop;
 using System;
 using System.Threading.Tasks;
@@ -11,15 +12,20 @@ namespace BlazorAppPeliculasNET5.Client.Pages
 	{
 		private int currentCount = 0;
 		[Inject] public IJSRuntime js { get; set; } = null!;
+		[CascadingParameter] private Task<AuthenticationState> authenticationState { get; set; }
 
 		public  async void IncrementCount()
 		{
-			var arreglo = new double[] { 1,2,3,4,5 };
-			var max = arreglo.Maximum();
-			var min = arreglo.Minimum();
-
-			await js.InvokeVoidAsync("alert", $"El max es {max} y el min es {min}");
-			currentCount++;
+			var authState = await authenticationState;
+			var user = authState.User;
+			if (user.Identity.IsAuthenticated)
+			{
+				currentCount++;
+			}
+			else
+			{
+				currentCount--;
+			}
 		}
 
 	}
