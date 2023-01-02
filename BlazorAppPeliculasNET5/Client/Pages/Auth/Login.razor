@@ -1,0 +1,47 @@
+﻿@page "/login"
+@inject IRepositorio repositorio
+@inject NavigationManager navigation
+@inject ILoginService loginService
+@inject SweetAlertService Swal
+<h3>Inicio de sesion</h3>
+
+<EditForm Model="userInfo" OnValidSubmit="LoginUser">
+    <DataAnnotationsValidator />
+
+    <div class="form-group">
+        <label>Email: </label>
+        <div>
+            <InputText class="form-control" @bind-Value="userInfo.Email" />
+            <ValidationMessage For="@(()=>userInfo.Email)" />
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Password: </label>
+        <div>
+            <InputPassword class="form-control" @bind-Value="userInfo.Password" />
+            <ValidationMessage For="@(()=>userInfo.Password)" />
+        </div>
+    </div>
+
+    <button class="btn btn-success" type="submit">Registrarse</button>
+</EditForm>
+
+@code {
+    private UserInfo userInfo = new UserInfo();
+
+    private async Task LoginUser()
+    {
+        var response = await repositorio.Post<UserInfo, UserToken>("api/cuentas/login", userInfo);
+        if (response.Error)
+        {
+            var messageError = await response.ObtenerMensageError();
+            await Swal.FireAsync("Error", messageError, SweetAlertIcon.Error);
+        }
+        else
+        {
+            await loginService.Login(response.Response.token);
+            navigation.NavigateTo("");
+        }
+    }
+}

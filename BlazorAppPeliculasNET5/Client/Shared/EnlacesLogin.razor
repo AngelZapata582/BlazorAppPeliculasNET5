@@ -1,0 +1,21 @@
+﻿@inject ILoginService loginService
+@inject NavigationManager navigate
+<AuthorizeView>
+    <Authorized>
+        <span>Hola, @context.User.Identity.Name</span>
+        <a class="btn btn-link nav-link" style="cursor:pointer;"
+        @onclick="@(()=>LogoutUser())">Cerrar Sesion</a>
+    </Authorized>
+    <NotAuthorized>
+        <a href="registro">Registrarse</a>
+        <a href="login" class="btn btn-link nav-link">Iniciar Sesion</a>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code{
+    private async Task LogoutUser()
+    {
+        await loginService.Logout();
+        navigate.NavigateTo("login");
+    }
+}
