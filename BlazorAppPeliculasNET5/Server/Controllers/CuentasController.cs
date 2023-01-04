@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -35,7 +36,7 @@ namespace BlazorAppPeliculasNET5.Server.Controllers
             var result = await _userManager.CreateAsync(user,model.Password);
             if(result.Succeeded)
             {
-                return BuildToken(model);
+                return await BuildToken(model);
             }
             else
             {
@@ -50,7 +51,7 @@ namespace BlazorAppPeliculasNET5.Server.Controllers
                 isPersistent: false, lockoutOnFailure: false);
             if (result.Succeeded)
             {
-                return BuildToken(user);
+                return await BuildToken(user);
             }
             else
             {
@@ -59,15 +60,22 @@ namespace BlazorAppPeliculasNET5.Server.Controllers
         }
 
         //metodo independiente del framework blazor y sql, crea un token jwt a partir de cualquier info
-        private UserToken BuildToken(UserInfo model)
+        private async Task<UserToken> BuildToken(UserInfo model)
         {
-            var clains = new[]
+            var clains = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.UniqueName, model.Email),
                 new Claim(ClaimTypes.Name, model.Email),
                 new Claim("miValor","Cualquier valor que sea"),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             };
+
+            var usuario = await _userManager.FindByEmailAsync(model.Email);
+            var roles = await _userManager.GetRolesAsync(usuario);
+            foreach (var rol in roles)
+            {
+                clains.Add(new Claim(ClaimTypes.Role,rol));
+            }
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["jwt:key"]));
             var creds = new SigningCredentials(key,SecurityAlgorithms.HmacSha256);

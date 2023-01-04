@@ -1,0 +1,76 @@
+﻿@page "/usuarios/editar/{UsuarioId}"
+@inject IRepositorio repositorio
+@inject NavigationManager navigation
+@inject SweetAlertService Swal
+<h3>EditarUsuario</h3>
+@if(Roles is null)
+{
+    <div class="d-flex justify-content-center">
+        <div class="spinner-border" role="status">
+        </div>
+    </div>
+}
+else
+{
+    <div class="form-inline">
+        <select class="form-control" @bind="rolSeleccionado">
+            <option value="0">Seleccione un rol</option>
+            @foreach (var rol in Roles)
+            {
+                <option value="@rol.Nombre">@rol.Nombre</option>
+            }
+        </select>
+        <button class="btn btn-info mx-2" @onclick="AsignarRol">Asignar Rol</button>
+        <button class="btn btn-danger mx-2" @onclick="RemoverRol">Remover Rol</button>
+    </div>
+}
+
+@code {
+    [Parameter] public string UsuarioId { get; set; } = null!;
+    List<RolDTO> Roles = new List<RolDTO>();
+    private string rolSeleccionado = "0";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var response = await repositorio.Get<List<RolDTO>>("api/usuarios/roles");
+        if (response.Error)
+        {
+            var errorMessage = await response.ObtenerMensageError();
+            await Swal.FireAsync("Error", errorMessage, SweetAlertIcon.Error);
+        }
+        else
+        {
+            Roles = response.Response;
+        }
+    }
+
+    private async Task EditarRol(string url)
+    {
+        if(rolSeleccionado == "0")
+        {
+            await Swal.FireAsync("Error", "Debe de seleccionar un rol", SweetAlertIcon.Error);
+            return;
+        }
+        var rolDTO = new EditarUser { Rol = rolSeleccionado, UsuarioId = UsuarioId };
+        var response = await repositorio.Post<EditarUser>(url,rolDTO);
+        if (response.Error)
+        {
+            var errorMessage = await response.ObtenerMensageError();
+            await Swal.FireAsync("Error", errorMessage, SweetAlertIcon.Error);
+        }
+        else
+        {
+            await Swal.FireAsync("Exito", "Se ha modificado el con exito", SweetAlertIcon.Success);
+        }
+    }
+
+    private async Task AsignarRol()
+    {
+        await EditarRol("api/usuarios/asignar");
+    }
+
+    private async Task RemoverRol()
+    {
+        await EditarRol("api/usuarios/remover");
+    }
+}
