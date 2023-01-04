@@ -40,7 +40,7 @@
         }
         else
         {
-            await loginService.Login(response.Response.token);
+            await loginService.Login(response.Response);
             navigation.NavigateTo("");
         }
     }

@@ -1,4 +1,6 @@
 ﻿using BlazorAppPeliculasNET5.Shared.DTOs;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -57,6 +59,17 @@ namespace BlazorAppPeliculasNET5.Server.Controllers
             {
                 return BadRequest("Credenciales no validas");
             }
+        }
+
+        [HttpGet("renovar")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ActionResult<UserToken>> Get()
+        {
+            var userInfo = new UserInfo()
+            {
+                Email = HttpContext.User.Identity.Name
+            };
+            return await BuildToken(userInfo);
         }
 
         //metodo independiente del framework blazor y sql, crea un token jwt a partir de cualquier info

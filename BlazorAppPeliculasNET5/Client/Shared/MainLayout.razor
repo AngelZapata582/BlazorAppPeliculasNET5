@@ -1,5 +1,5 @@
 ﻿@inherits LayoutComponentBase
-
+@inject RenovadorToken renovar
 <div class="page">
     <div class="sidebar">
         <NavMenu />
@@ -16,3 +16,10 @@
         </div>
     </div>
 </div>
+
+@code{
+    protected override void OnInitialized()
+    {
+        renovar.Iniciar();
+    }
+}

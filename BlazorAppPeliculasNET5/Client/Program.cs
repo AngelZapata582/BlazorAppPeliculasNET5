@@ -37,6 +37,8 @@ namespace BlazorAppPeliculasNET5.Client
 
             builder.Services.AddScoped<ILoginService, ProveedorAutenticacion>(provider =>
                 provider.GetRequiredService<ProveedorAutenticacion>());
+
+            builder.Services.AddScoped<RenovadorToken>();
             await builder.Build().RunAsync();
         }
     }
