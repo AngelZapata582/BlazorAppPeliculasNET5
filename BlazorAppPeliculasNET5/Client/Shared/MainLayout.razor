@@ -1,5 +1,8 @@
 ﻿@inherits LayoutComponentBase
 @inject RenovadorToken renovar
+@inject IJSRuntime js
+@inject NavigationManager navigation
+
 <div class="page">
     <div class="sidebar">
         <NavMenu />
@@ -18,8 +21,21 @@
 </div>
 
 @code{
-    protected override void OnInitialized()
+    [CascadingParameter]
+    public Task<AuthenticationState> authenticationState { get; set; } = null!;
+    protected override async Task OnInitializedAsync()
     {
+        await js.InvokeVoidAsync("timerInactivo",DotNetObjectReference.Create(this));
         renovar.Iniciar();
+    }
+
+    [JSInvokable]
+    public async Task Logout()
+    {
+        var authState = await authenticationState;
+        if (authState.User.Identity.IsAuthenticated)
+        {
+            navigation.NavigateTo("logout");
+        }
     }
 }
