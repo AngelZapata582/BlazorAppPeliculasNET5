@@ -58,6 +58,7 @@ namespace BlazorAppPeliculasNET5.Server.Controllers
             }
         }
 
+        //metodo independiente del framework blazor y sql, crea un token jwt a partir de cualquier info
         private UserToken BuildToken(UserInfo model)
         {
             var clains = new[]
@@ -76,9 +77,9 @@ namespace BlazorAppPeliculasNET5.Server.Controllers
             JwtSecurityToken token = new JwtSecurityToken(
                 issuer: null,
                 audience:null,
-                claims:null,
-                expires:null,
-                signingCredentials:null);
+                claims:clains,
+                expires:expiration,
+                signingCredentials:creds);
 
             return new UserToken
             {

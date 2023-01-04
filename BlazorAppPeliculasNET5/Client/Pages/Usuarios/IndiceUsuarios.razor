@@ -1,0 +1,66 @@
+﻿@page "/usuarios"
+@inject IRepositorio repositorio
+@inject SweetAlertService Swal
+@inject NavigationManager navigation
+<h3>IndiceUsuarios</h3>
+<Paginacion paginaActual="paginaActual" paginasTotales="paginasTotales"
+    PaginaSeleccionada="PaginaSeleccionada"></Paginacion>
+<ListadoGenerico listado="Usuarios">
+    <RegistrosCompletos>
+        <table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th></th>
+            <th>Usuario</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Usuarios)
+        {
+            <tr>
+                <td>
+                    <a class="btn btn-warning" href="/usuarios/editar/@user.Id">Editar</a>
+                </td>
+                <td>
+                    @user.Email
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+    </RegistrosCompletos>
+</ListadoGenerico>
+@code {
+    private List<UsuarioDTO> Usuarios = new List<UsuarioDTO>();
+
+    private int paginaActual = 1;
+    private int paginasTotales;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Cargar();
+    }
+
+    private async Task PaginaSeleccionada(int pagina)
+    {
+        paginaActual = pagina;
+        await Cargar(pagina);
+    }
+
+    private async Task Cargar(int pagina = 1)
+    {
+        var response = await repositorio.Get<List<UsuarioDTO>>($"api/usuarios?pagina={pagina}");
+
+        if (response.Error)
+        {
+            var errorMessage = await response.ObtenerMensageError();
+            await Swal.FireAsync("Error", errorMessage, SweetAlertIcon.Error);
+        }
+        else
+        {
+            paginasTotales = int.Parse(response.HttpResponseMessage.Headers
+                                .GetValues("paginas").FirstOrDefault());
+            Usuarios = response.Response;
+        }
+    }
+}
