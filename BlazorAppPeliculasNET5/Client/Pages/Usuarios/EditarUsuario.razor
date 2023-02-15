@@ -1,0 +1,73 @@
+﻿@page "/usuarios/editar/{UserId}"
+@inject IRepositorio repositorio
+@inject SweetAlertService Swal
+@inject NavigationManager navigation
+@inject HttpClient http
+<h3>EditarUsuario</h3>
+<select @bind="rolSeleccionado">
+    <option>Seleccione un rol</option>
+    @if (Roles is not null)
+    {
+        @foreach (var rol in Roles)
+        {
+            <option value="@rol.RolName">@rol.RolName</option>
+        }
+    }
+</select>
+
+<button @onclick="AsignarRol">Asignar Rol</button>
+<button @onclick="RemoverRol">Remover Rol</button>
+
+@code {
+    [Parameter] public string UserId { get; set; }
+    private List<RolDTO> Roles = new List<RolDTO>();
+    private string rolSeleccionado { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var response = await http.GetFromJsonAsync<List<RolDTO>>("api/usuario/roles");
+        Roles = response;
+        //if (response.Error)
+        //{
+        //    var mensajeError = await response.ObtenerMensageError();
+        //    await Swal.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
+        //}
+        //else
+        //{
+            
+        //}
+    }
+
+    private async Task AsignarRol()
+    {
+        await EditarRol("api/usuario/asignar");
+    }
+
+    private async Task RemoverRol()
+    {
+        await EditarRol("api/usuario/remover");
+    }
+
+    private async Task EditarRol(string url)
+    {
+        if(rolSeleccionado == null)
+        {
+            await Swal.FireAsync("Error", "Debe de seleccionar un rol", SweetAlertIcon.Error);
+            return;
+        }
+
+        EditarRolDTO rolEdit = new EditarRolDTO { UserId = UserId, RolId = rolSeleccionado };
+
+        var response = await repositorio.Post<EditarRolDTO>(url,rolEdit);
+        if (response.Error)
+        {
+            var mensajeError = await response.ObtenerMensageError();
+            await Swal.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
+        }
+        else
+        {
+            await Swal.FireAsync("Rol", "Rol modificado", SweetAlertIcon.Success);
+            return;
+        }
+    }
+}

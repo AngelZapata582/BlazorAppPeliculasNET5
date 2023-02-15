@@ -1,0 +1,48 @@
+﻿@page "/usuarios"
+@inject IRepositorio repositorio
+@inject SweetAlertService Swal
+@inject NavigationManager navigate
+<h3>IndiceUsuarios</h3>
+<ListadoGenerico listado="Usuarios">
+    <RegistrosCompletos>
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Usuario</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Usuarios)
+                {
+                    <tr>
+                        <td>
+                            <a class="btn btn-warning" style="cursor:pointer"
+                            href="/usuarios/editar/@user.UserId">Editar</a>
+                        </td>
+                        <td>
+                            @user.Email
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </RegistrosCompletos>
+</ListadoGenerico>
+@code {
+    List<UserDTO> Usuarios;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var response = await repositorio.Get<List<UserDTO>>("api/usuario");
+        if (response.Error)
+        {
+            var mensajeError = await response.ObtenerMensageError();
+            await Swal.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
+        }
+        else
+        {
+            Usuarios = response.Response;
+        }
+    }
+}
