@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace BlazorAppPeliculasNET5.Shared.DTOs
 {
-    public class RolDTO
-    {
-        public string Nombre { get; set; } = null!;
-    }
+	public class UsuarioDTO
+	{
+		public string Id { get; set; }
+		public string Email { get; set; }
+	}
 }
