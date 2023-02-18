@@ -22,7 +22,7 @@ namespace BlazorAppPeliculasNET5.Server.Controllers
         private readonly UserManager<IdentityUser> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
 
-        public UsuarioController(ApplicationDbContext context, 
+        public UsuarioController(ApplicationDbContext context,
             UserManager<IdentityUser> userManager,
             RoleManager<IdentityRole> roleManager)
         {
@@ -37,23 +37,23 @@ namespace BlazorAppPeliculasNET5.Server.Controllers
             var queryable = context.Users.AsQueryable();
             await HttpContext.InsertarParametrosPaginacionRespuesta(queryable, paginacion.registros);
             return await queryable.Paginar(paginacion)
-                .Select(x => new UserDTO { Email = x.Email, UserId = x.Id}).ToListAsync();
+                .Select(x => new UserDTO { Email = x.Email, UserId = x.Id }).ToListAsync();
         }
 
-        [HttpGet("roles")]
-        public async Task<ActionResult<List<RolDTO>>> Get()
-        {
-            var roles = await context.Roles
-                .Select(x => new RolDTO { RolName = x.Name, RolId = x.Id })
-                .ToListAsync();
-            return Ok(roles);
-        }
+        //[HttpGet("roles")]
+        //public async Task<ActionResult<List<RolDTO>>> Get()
+        //{
+        //    var roles = await context.Roles
+        //        .Select(x => new RolDTO { RolName = x.Name, RolId = x.Id })
+        //        .ToListAsync();
+        //    return Ok(roles);
+        //}
 
         [HttpPost("asignar")]
         public async Task<ActionResult> Put(EditarRolDTO editarRolDTO)
         {
-            var usuario = await context.Users.FirstOrDefaultAsync(x=>x.Id == editarRolDTO.UserId);
-            await userManager.AddToRoleAsync(usuario,editarRolDTO.RolId);
+            var usuario = await context.Users.FirstOrDefaultAsync(x => x.Id == editarRolDTO.UserId);
+            await userManager.AddToRoleAsync(usuario, editarRolDTO.RolId);
             return Ok(usuario);
         }
 
