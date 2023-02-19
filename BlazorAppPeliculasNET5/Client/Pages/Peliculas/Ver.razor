@@ -19,7 +19,7 @@ else
     <span>
         @modelo.Pelicula.Lanzamiento.Value.ToString("dd MM yyyy")
         | Promedio: @modelo.Promedio.ToString("0.#") / 5
-        | Tu puntuacion: @modelo.Voto.ToString()
+        | Tu puntuacion: <Rating MaxRate="5" RateSelected="modelo.Voto" onVote="onVote"></Rating>
     </span>
     <div class="d-flex my-2">
         <span style="display: inline-block" class="mr-2">
@@ -72,6 +72,22 @@ else
         else
         {
             modelo = responseHttp.Response;
+        }
+    }
+
+    private async Task onVote(int votoSeleccionado)
+    {
+        modelo.Voto = votoSeleccionado;
+        var votoPelicula = new VotoPelicula() { Voto = votoSeleccionado, PeliculaId = PeliculaId };
+        var response = await repositorio.Post("api/voto",votoPelicula);
+        if (response.Error)
+        {
+            var mensajeError = await response.ObtenerMensageError();
+            await Swal.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
+        }
+        else
+        {
+            await Swal.FireAsync("Voto", $"Ha votado con un valor de {votoSeleccionado}", SweetAlertIcon.Success);
         }
     }
 }
